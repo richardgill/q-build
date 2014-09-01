@@ -58,8 +58,10 @@ main()
 
     local app_name=kdb-plus-${KDB_VERSION}
     local app_path=kdb-plus-${kdb_major_version}
-    local source_target=${build_loc}/SOURCES/${app_name}.tar.gz
-    local spec_target=${build_loc}/SPECS/${app_name}.spec
+    local source_dir=${build_loc}/SOURCES
+    local source_target=${source_dir}/${app_name}.tar.gz
+    local spec_dir=${build_loc}/SPECS
+    local spec_target=${spec_dir}/${app_name}.spec
 
     echoInf "\tKDB Version:\t$KDB_VERSION"
     echoInf "\tKDB Folder:\t$kdb_root"
@@ -73,10 +75,13 @@ main()
     cp ${PROGDIR}/kdb-plus.profile ./$app_path
     echo "$KDB_VERSION" > ./$app_path/VERSION
     sed -i "s|~~INSTALL_PATH~~|/opt/kdb-plus/$app_path|g" ./${app_path}/kdb-plus.profile
+
+    mkdir -p $source_dir
     tar -cvzh -f $source_target ./$app_path
 
     echoInf "\n$(date) Generating SPEC file...\n"
 
+    mkdir -p $spec_dir
     cp -f ${PROGDIR}/kdb-plus.spec $spec_target
 
     sed -i "s/~~VERSION~~/$kdb_major_version/g" $spec_target
@@ -87,10 +92,9 @@ main()
     find ./$app_path -type f | grep '/q$' | awk ' { print "install -m 755 ." $1 " %{buildroot}/opt/kdb-plus/" $1 }' >> $spec_target
 
     echoInf "\n$(date) Building RPM...\n"
+    rpmbuild --define "_topdir ${build_loc}" -bb $spec_target
 
-    rpmbuild -bb $spec_target
-
-    echoInfo "\n$(date) BUILD COMPLETE!\n"
+    echoInf "\n$(date) BUILD COMPLETE!\n"
 
     popd > /dev/null
     exit 0
@@ -129,4 +133,3 @@ trap exitCleanup EXIT
 
 
 main
-
