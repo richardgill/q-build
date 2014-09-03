@@ -58,10 +58,8 @@ main()
 
     local app_name=kdb-plus-${KDB_VERSION}
     local app_path=kdb-plus-${kdb_major_version}
-    local source_dir=${build_loc}/SOURCES
-    local source_target=${source_dir}/${app_name}.tar.gz
-    local spec_dir=${build_loc}/SPECS
-    local spec_target=${spec_dir}/${app_name}.spec
+    local source_target=${build_loc}/SOURCES/${app_name}.tar.gz
+-    local spec_target=${build_loc}/SPECS/${app_name}.spec
 
     echoInf "\tKDB Version:\t$KDB_VERSION"
     echoInf "\tKDB Folder:\t$kdb_root"
